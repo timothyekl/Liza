@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import net.minecraft.server.MinecraftServer;
+
 public class CBThread extends Thread {
 	public InputStream in;
 	public PrintStream out;
@@ -33,6 +35,9 @@ public class CBThread extends Thread {
 	@Override
 	public void interrupt() {
 		super.interrupt();
-		BukkitFinder.getActiveMinecraftServer().stop();
+		MinecraftServer mcServer = BukkitFinder.getActiveMinecraftServer();
+		if(mcServer != null) {
+			mcServer.stop();
+		}
 	}
 }

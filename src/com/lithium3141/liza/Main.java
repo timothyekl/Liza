@@ -35,7 +35,7 @@ public class Main {
 			String input = (new BufferedReader(new InputStreamReader(stdin))).readLine();
 			stdout.println(input);
 			if(input.startsWith("stop")) {
-				stdout.println("Killing...");
+				stdout.println("Stopping Liza main process...");
 				serverThread.interrupt();
 				System.exit(0);
 			}
