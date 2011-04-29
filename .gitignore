@@ -16,7 +16,9 @@ bukkit.yml
 ops.txt
 server.log*
 server.properties
-test-error.txt
-test-output.txt
 white-list.txt
 world/
+
+# Liza
+liza-output.txt
+liza-error.txt
