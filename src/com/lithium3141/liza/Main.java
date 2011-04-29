@@ -60,6 +60,7 @@ public class Main {
 			if(input.startsWith("stop")) {
 				stdout.println("Killing...");
 				serverThread.interrupt();
+				System.exit(0);
 			}
 		}
 	}
