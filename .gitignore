@@ -1,3 +1,10 @@
+# Java
+bin
+
+# Libraries
+craftbukkit-0.0.1-SNAPSHOT.jar
+
+# Eclipse
 .classpath
 .project
 .settings
