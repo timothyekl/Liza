@@ -197,4 +197,26 @@ public class Liza {
 		}
 		getCraftServer().getPluginManager().disablePlugin(plugin);
 	}
+	
+	/**
+	 * Wait a given number of seconds for human interaction with the
+	 * test Minecraft server. This method is useful for seeing the
+	 * actions taken by mock players on the test server.
+	 * 
+	 * @param secs the number of seconds to wait
+	 * @param verbose whether to print log messages to stdout
+	 */
+	public static void waitForInteraction(int secs, boolean verbose) {
+		for(int i = secs; i > 0; i--) {
+			try {
+				Thread.sleep(1000L);
+			} catch(InterruptedException e) {
+				e.printStackTrace(Liza.stderr);
+			}
+			
+			if(verbose) {
+				Liza.stdout.println("Waiting; " + i + " seconds left...");
+			}
+		}
+	}
 }

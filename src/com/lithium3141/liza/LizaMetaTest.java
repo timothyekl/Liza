@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import net.minecraft.server.MinecraftServer;
 
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,6 +44,22 @@ public class LizaMetaTest extends LizaTest {
 		
 		Assert.assertNotNull("Fresh craft server should have a plugin loader", craftServer.getPluginManager());
 		Assert.assertEquals("Fresh craft server should not have plugins loaded", 0, craftServer.getPluginManager().getPlugins().length);
+	}
+	
+	@Test
+	public void testMockPlayer() {
+		LizaPlayer mockPlayer = new LizaPlayer("Liza");
+		
+		Assert.assertNotNull("Liza player has no internal EntityPlayer", mockPlayer.getEntityPlayer());
+		Assert.assertEquals("Liza player did not retain name", "Liza", mockPlayer.getName());
+		
+		Assert.assertEquals("Unexpected number of players online", 1, Liza.getCraftServer().getOnlinePlayers().length);
+		Assert.assertTrue("Online player is unexpected type", Liza.getCraftServer().getOnlinePlayers()[0] instanceof CraftPlayer);
+		
+		CraftPlayer craftPlayer = (CraftPlayer)Liza.getCraftServer().getOnlinePlayers()[0];
+		
+		Assert.assertEquals("Server-registered player did not retain name", "Liza", craftPlayer.getName());
+		Assert.assertEquals("Server player and Liza player have different entities", mockPlayer.getEntityPlayer(), craftPlayer.getHandle());
 	}
 	
 }
