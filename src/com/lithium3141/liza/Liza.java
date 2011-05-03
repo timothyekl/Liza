@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
+
+import junit.framework.Assert;
 //import java.lang.reflect.InvocationTargetException;
 //import java.lang.reflect.Method;
 
@@ -20,8 +22,19 @@ public class Liza {
 	private static CBThread craftBukkitThread;
 	private static MinecraftServer minecraftServer;
 	
+	/**
+	 * Original System.out stream
+	 */
 	public static PrintStream stdout;
+	
+	/**
+	 * Original System.err stream
+	 */
 	public static PrintStream stderr;
+	
+	/**
+	 * Original System.in stream
+	 */
 	public static InputStream stdin;
 	
 	/**
@@ -110,17 +123,21 @@ public class Liza {
 	 * @throws InvalidDescriptionException if the underlying call to the PluginManager fails
 	 * @throws InvalidPluginException if the underlying call to the PluginManager fails
 	 */
-	public static void loadPluginJar(String jarPath) throws FileNotFoundException, InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
+	public static void loadPluginJar(String jarPath) {
 		File jarFile = new File(jarPath);
 		if(!jarFile.exists()) {
-			throw new FileNotFoundException("Cannot find file: " + jarPath);
+			Assert.fail("Cannot find file: " + jarPath);
 		}
 		
-		Plugin result = getMinecraftServer().server.getPluginManager().loadPlugin(jarFile);
+		Plugin result = null;
+		try {
+			result = getCraftServer().getPluginManager().loadPlugin(jarFile);
+		} catch(Exception e) {
+			Assert.fail("Caught exception loading plugin: " + e.getMessage());
+		}
+		
 		if(result == null) {
-			Liza.stderr.println("Choked");
-		} else {
-			Liza.stdout.println("Got plugin result");
+			Assert.fail("Plugin loading failed");
 		}
 	}
 	
@@ -147,5 +164,13 @@ public class Liza {
 			e.printStackTrace(stderr);
 		}
 		*/
+	}
+	
+	public static void disablePlugin(String name) {
+		Plugin plugin = getCraftServer().getPluginManager().getPlugin(name);
+		if(plugin == null) {
+			Assert.fail("Could not find plugin to unload: " + name);
+		}
+		getCraftServer().getPluginManager().disablePlugin(plugin);
 	}
 }
