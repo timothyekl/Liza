@@ -166,10 +166,34 @@ public class Liza {
 		*/
 	}
 	
+	/**
+	 * Enable a loaded plugin by name. Calling this method implies
+	 * that the name given maps to a loaded plugin; attempting to
+	 * disable a plugin that is not loaded will result in a test
+	 * failure.
+	 * 
+	 * @param name the name of the plugin to enable
+	 */
+	public static void enablePlugin(String name) {
+		Plugin plugin = getCraftServer().getPluginManager().getPlugin(name);
+		if(plugin == null) {
+			Assert.fail("Could not find plugin to enable: " + name);
+		}
+		getCraftServer().getPluginManager().enablePlugin(plugin);
+	}
+	
+	/**
+	 * Disable a loaded plugin by name. Calling this method implies
+	 * that the name given maps to a loaded plugin; attempting to
+	 * disable a plugin that is not loaded will result in a test
+	 * failure.
+	 * 
+	 * @param name the name of the plugin to disable
+	 */
 	public static void disablePlugin(String name) {
 		Plugin plugin = getCraftServer().getPluginManager().getPlugin(name);
 		if(plugin == null) {
-			Assert.fail("Could not find plugin to unload: " + name);
+			Assert.fail("Could not find plugin to disable: " + name);
 		}
 		getCraftServer().getPluginManager().disablePlugin(plugin);
 	}
