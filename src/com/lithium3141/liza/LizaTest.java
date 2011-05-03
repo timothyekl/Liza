@@ -10,7 +10,7 @@ public class LizaTest {
 	/**
 	 * Amount of time to wait for the Minecraft server to start and stop, in milliseconds
 	 */
-	public static long SERVER_WAIT = 2000L;
+	public static long SERVER_WAIT = 1000L;
 	
 	private static void waitForServer() {
 		try {
