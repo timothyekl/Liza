@@ -6,7 +6,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-
+/**
+ * Small main stub for running Liza directly. Not generally used,
+ * except for debugging in core Liza functionality (e.g. CBThread
+ * class).
+ * 
+ * @see Liza
+ */
 public class Main {
 
 	public static CBThread serverThread;

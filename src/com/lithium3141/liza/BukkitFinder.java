@@ -9,8 +9,6 @@ import net.minecraft.server.ThreadServerApplication;
  * Aids in the process of finding a Bukkit. (In reality, does some
  * black magic with threads and reflection to get the running
  * MinecraftServer instance.)
- * 
- * @author Tim Ekl <lithium3141@gmail.com>
  */
 public class BukkitFinder {
 	/**
@@ -19,6 +17,13 @@ public class BukkitFinder {
 	 * handling the game, as opposed to e.g. the net listener.
 	 */
 	public static final String MINECRAFT_SERVER_THREAD_NAME = "Server thread";
+	
+	/**
+	 * The name given to the thread listening on the network port. Used
+	 * to distinguish between active threads and locate the one
+	 * handling network traffic, as opposed to e.g. the server.
+	 */
+	public static final String MINECRAFT_NETWORK_THREAD_NAME = "Listen thread";
 	
 	/**
 	 * The obfuscated name used in the ThreadServerApplication class
@@ -49,6 +54,34 @@ public class BukkitFinder {
 	}
 	
 	/**
+	 * Find the currently running Thread (really an instance of
+	 * ThreadServerApplication) responsible for running the Minecraft server.
+	 * 
+	 * @return the Thread running the currently active Minecraft server
+	 */
+	public static Thread getActiveServerThread() {
+		for(Thread t : getAllThreads()) {
+			if(t != null && t.getName() != null && t.getName().equals(MINECRAFT_SERVER_THREAD_NAME)) {
+				return t;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Find the currently running Thread (really an instance of
+	 * NetworkAcceptThread) that is holding the Minecraft server port.
+	 */
+	public static Thread getActiveNetworkThread() {
+		for(Thread t : getAllThreads()) {
+			if(t != null & t.getName() != null && t.getName().equals(MINECRAFT_NETWORK_THREAD_NAME)) {
+				return t;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Locate the MinecraftServer instance currently running in this
 	 * Java VM. Relies on both the label given to the server thread
 	 * and the obfuscated field name in ThreadServerApplication, as
@@ -66,30 +99,21 @@ public class BukkitFinder {
 	 * an instance cannot be found
 	 */
 	public static MinecraftServer getActiveMinecraftServer() {
-		// Loop over active threads
-		for(Thread t : getAllThreads()) {
-			// Find thread labeled properly
-			if(t != null && t.getName() != null && t.getName().equals(MINECRAFT_SERVER_THREAD_NAME)) {
-				ThreadServerApplication tsa = (ThreadServerApplication)t;
-				
-				// Do reflection black magic
-				Class<? extends ThreadServerApplication> c = tsa.getClass();
-				Field f;
-				try {
-					f = c.getDeclaredField(MINECRAFT_SERVER_FIELD_NAME);
-					
-					// Make field accessible to this method, then get value
-					f.setAccessible(true);
-					MinecraftServer mcserver = (MinecraftServer) f.get(tsa);
-					return mcserver;
-				} catch (Exception e) {
-					// Pokemon exception handling, I know, but this whole thing smells anyway
-					return null;
-				}
-			}
+		ThreadServerApplication tsa = (ThreadServerApplication)getActiveServerThread();
+
+		// Do reflection black magic
+		Class<? extends ThreadServerApplication> c = tsa.getClass();
+		Field f;
+		try {
+			f = c.getDeclaredField(MINECRAFT_SERVER_FIELD_NAME);
+
+			// Make field accessible to this method, then get value
+			f.setAccessible(true);
+			MinecraftServer mcserver = (MinecraftServer) f.get(tsa);
+			return mcserver;
+		} catch (Exception e) {
+			// Pokemon exception handling, I know, but this whole thing smells anyway
+			return null;
 		}
-		
-		// Couldn't find an active server
-		return null;
 	}
 }
