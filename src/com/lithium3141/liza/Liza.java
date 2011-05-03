@@ -8,11 +8,11 @@ import java.io.PrintStream;
 //import java.lang.reflect.Method;
 
 //import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.UnknownDependencyException;
-
 
 import net.minecraft.server.MinecraftServer;
 
@@ -24,6 +24,23 @@ public class Liza {
 	public static PrintStream stderr;
 	public static InputStream stdin;
 	
+	/**
+	 * Get the currently running Minecraft server instance. The returned
+	 * object is a pure Minecraft server and has minimal CraftBukkit
+	 * code associated with it. For the CraftBukkit server equivalent,
+	 * see Liza#getCraftServer().
+	 * 
+	 * The instance is cached across runs; locating the instance is a 
+	 * potentially time-consuming operation, especially if the plugin 
+	 * under test is heavily multithreaded. One side effect of this is
+	 * that calls to Liza#getMinecraftServer() will generally return the
+	 * same object across multiple test methods.
+	 * 
+	 * @return the currently running MinecraftServer instance
+	 * 
+	 * @see MinecraftServer
+	 * @see Liza#getCraftServer()
+	 */
 	public static MinecraftServer getMinecraftServer() {
 		if(minecraftServer == null) {
 			minecraftServer = BukkitFinder.getActiveMinecraftServer();
@@ -31,6 +48,32 @@ public class Liza {
 		return minecraftServer;
 	}
 	
+	/**
+	 * Get the currently running CraftBukkit server instance. The returned
+	 * instance is a CraftBukkit server and has mostly CraftBukkit data
+	 * associated with it. For the purer Minecraft server equivalent, see
+	 * Liza#getMinecraftServer().
+	 * 
+	 * The returned instance depends on a call to Liza#getMinecraftServer();
+	 * as such, the first call to Liza#getCraftServer() can potentially be
+	 * rather time-consuming. However, once fetched the CraftServer is cached
+	 * across multiple tests.
+	 * 
+	 * @return the currently running CraftServer instance
+	 * 
+	 * @see CraftServer
+	 * @see Liza#getMinecraftServer()
+	 */
+	public static CraftServer getCraftServer() {
+		return getMinecraftServer().server;
+	}
+	
+	/**
+	 * Perform setup to begin Liza tests. Should be called once
+	 * before beginning any testing. At present:
+	 *  - Saves standard I/O streams for use later
+	 *  - Spawns a new CraftBukkit server instance
+	 */
 	public static void setUpForTests() {
 		stdout = System.out;
 		stderr = System.err;
@@ -40,6 +83,13 @@ public class Liza {
 		craftBukkitThread.start();
 	}
 	
+	/**
+	 * Finalize any testing. Should be called once after completing
+	 * all unit tests. At present:
+	 *  - Interrupts running CraftBukkit server instance (but does not
+	 *    guarantee the instance is killed)
+	 *  - Restores standard I/O streams
+	 */
 	public static void tearDownFromTests() {
 		craftBukkitThread.interrupt();
 		

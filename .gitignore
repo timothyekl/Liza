@@ -3,6 +3,7 @@ bin
 
 # Libraries
 craftbukkit-0.0.1-SNAPSHOT.jar
+bukkit-0.0.1-SNAPSHOT.jar
 
 # Eclipse
 .classpath
