@@ -74,6 +74,11 @@ public class Liza {
 		}
 	}
 	
+	/**
+	 * Load a plugin from an instantiated Plugin class. Unsupported and unimplemented.
+	 * @param pluginInstance
+	 * @throws UnsupportedOperationException
+	 */
 	public static void loadPlugin(Plugin pluginInstance) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("Loading plugin instances from runtime Java objects not supported");
 		
